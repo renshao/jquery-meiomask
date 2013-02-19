@@ -36,7 +36,9 @@
     var isIphone = (window.orientation != null);
 
     // browsers like firefox2 and before and opera doesnt have the onPaste event, but the paste feature can be done with the onInput event.
-    var pasteEvent = (($.browser.opera || ($.browser.mozilla && parseFloat($.browser.version.substr(0,3)) < 1.9)) ? 'input' : 'paste');
+    // no need to detect Firefox 2 and old Opera as they are so out of date
+    // var pasteEvent = (($.browser.opera || ($.browser.mozilla && parseFloat($.browser.version.substr(0,3)) < 1.9)) ? 'input' : 'paste');
+    var pasteEvent = 'paste';
 
     // the timeout is set because we can't get the value from the input without it
     var pasteHandler = function(e) {
@@ -401,8 +403,9 @@
                     this.__setRange(o._this, o.range.start, o.range.end);
 
                 //fix so ie's and safari's caret won't go to the end of the input value.
-                if (($.browser.msie || $.browser.safari) && !o.reverse)
-                    this.__setRange(o._this,o.range.start,o.range.end);
+                // This has probably been fixed in latest version of IE and Safari
+                // if (($.browser.msie || $.browser.safari) && !o.reverse)
+                //     this.__setRange(o._this,o.range.start,o.range.end);
 
                 if (this.ignore) return true;
 
@@ -504,8 +507,8 @@
                 // this bug was pointed by Pedro Martins
                 // it fixes a strange behavior that ie was having after a char was inputted in a text input that
                 // had its content selected by any range
-                if ($.browser.msie && ((o.range.start === 0 && o.range.end === 0) || o.range.start != o.range.end ))
-                    this.__setRange(o._this, o.value.length);
+                if (navigator.appName === 'Microsoft Internet Explorer' && ((o.range.start === 0 && o.range.end === 0) || o.range.start != o.range.end ))
+                     this.__setRange(o._this, o.value.length);
                 return false;
             },
 
@@ -685,7 +688,7 @@
 
             // adaptation from http://digitarald.de/project/autocompleter/
             __getRange: function(input) {
-                if (!$.browser.msie) return {start: input.selectionStart, end: input.selectionEnd};
+                if (navigator.appName !== 'Microsoft Internet Explorer') return {start: input.selectionStart, end: input.selectionEnd};
                 var pos = {start: 0, end: 0},
                     range = document.selection.createRange();
                 pos.start = 0 - range.duplicate().moveStart('character', -100000);
@@ -714,4 +717,4 @@
         }
     });
 })(jQuery);
-
+
